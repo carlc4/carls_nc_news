@@ -16,7 +16,7 @@ describe("GET /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then((response) => {
-        expect(response.body).toHaveLength(3);
+        expect(response.body.topics).toHaveLength(3);
       });
   });
   test("Status: 404, returns url not found message", () => {
