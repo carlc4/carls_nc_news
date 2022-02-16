@@ -67,10 +67,15 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles.article_id).toEqual(1);
-        expect(body.articles.title).toEqual(
-          "Living in the shadow of a great man"
-        );
+        expect(body.articles).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        });
       });
   });
 });
