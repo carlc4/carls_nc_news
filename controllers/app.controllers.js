@@ -14,11 +14,11 @@ exports.getTopics = (req, res, next) => {
     });
 };
 
-// exports.getUsers = (req, res, next) => {
-//   fetchUsers().then((users) => {
-//     res.status(200).send({ users });
-//   });
-// };
+exports.getUsers = (req, res, next) => {
+  fetchUsers().then((users) => {
+    res.status(200).send({ users });
+  });
+};
 
 exports.getArticleById = (req, res, next) => {
   fetchArticleById(req)

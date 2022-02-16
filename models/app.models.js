@@ -8,13 +8,13 @@ exports.fetchTopics = async () => {
   return topicResult.rows;
 };
 
-// exports.fetchUsers = async () => {
-//   const userResult = await db.query(`
-//   SELECT username
-//   FROM users;
-//   `);
-//   return userResult.rows;
-// };
+exports.fetchUsers = async () => {
+  const userResult = await db.query(`
+  SELECT username
+  FROM users;
+  `);
+  return userResult.rows;
+};
 
 exports.fetchArticleById = async (req) => {
   const articleId = req.params.article_id;
