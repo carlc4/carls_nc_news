@@ -4,7 +4,15 @@ const db = require("../db/connection");
 exports.fetchArticleById = async (req) => {
   const articleId = req.params.article_id;
   const articleIdResult = await db.query(
-    `SELECT * FROM articles WHERE article_id = $1;`,
+    `
+  SELECT *,
+  COUNT(comments.article_id) AS comment_count
+  FROM articles 
+  LEFT JOIN comments
+  ON articles.article_id = comments.article_id 
+  WHERE articles.article_id = $1
+  GROUP BY articles.article_id, comments.comment_id
+  ;`,
     [articleId]
   );
   if (articleIdResult.rows.length === 0) {
