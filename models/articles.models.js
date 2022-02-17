@@ -20,7 +20,7 @@ exports.fetchArticles = async () => {
     `
     SELECT article_id, title, topic, author, created_at, votes
     FROM articles
-    ORDER BY created_at DESC;;
+    ORDER BY created_at DESC;
     `
   );
   return articleResult.rows;
