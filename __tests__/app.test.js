@@ -79,6 +79,11 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
+describe("REFACTOR - GET /api/articles/:article_id", () => {
+  test("Status: 200", () => {
+    return request(app).get("/api/articles/1").expect(200);
+  });
+});
 describe("GET /api/users", () => {
   test("Status: 200", () => {
     return request(app).get("/api/users").expect(200);
