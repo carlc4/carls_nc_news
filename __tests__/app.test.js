@@ -106,14 +106,7 @@ describe("GET /api/users", () => {
       });
   });
 });
-
-describe("Error handling", () => {
-  test("Status: 404, returns url not found message", () => {
-    return request(app)
-      .patch("/api/articles/1")
-      .send({ inc_votes: 1 })
-      .expect(200);
-  });
+describe("PATCH /api/articles/:article_id", () => {
   test("Status: 200, votes key on object updated when positive number passed in", () => {
     return request(app)
       .patch("/api/articles/1")
@@ -149,29 +142,33 @@ describe("Error handling", () => {
       });
   });
 });
-describe("GET /api/users", () => {
-  test("Status: 200", () => {
-    return request(app).get("/api/users").expect(200);
-  });
-  test("Status: 200, returns array of 4 test objects", () => {
+describe("GET/api/articles", () => {
+  test("Status: 200, responds with array of article objects, containing correct properties", () => {
     return request(app)
-      .get("/api/users")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.users).toHaveLength(4);
-      });
-  });
-  test("Status: 200, returns an array of objects with username key", () => {
-    return request(app)
-      .get("/api/users/")
+      .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        body.users.forEach((username) => {
-          expect(username).toEqual(
-            expect.objectContaining({
-              username: expect.any(String),
-            })
-          );
+        expect(body.articles).toBeInstanceOf(Array);
+        expect(body.articles).toHaveLength(12);
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("Status: 200, objects are sorted in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", {
+          descending: true,
         });
       });
   });
