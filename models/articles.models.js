@@ -24,13 +24,20 @@ exports.fetchArticleById = async (req) => {
 };
 
 exports.fetchArticles = async () => {
-  const articleResult = await db.query(
-    `
-    SELECT article_id, title, topic, author, created_at, votes
-    FROM articles
-    ORDER BY created_at DESC;
-    `
-  );
+  const articleResult = await db.query(`
+  SELECT articles.*, 
+  COUNT (comments.article_id) AS comment_count
+  FROM articles
+  LEFT JOIN comments
+  ON articles.article_id = comments.article_id 
+  GROUP BY articles.article_id, comments.comment_id
+  ORDER BY articles.created_at DESC`);
+
+  // `
+  // SELECT article_id, title, topic, author, created_at, votes
+  // FROM articles
+  // ORDER BY created_at DESC;
+  // `
   return articleResult.rows;
 };
 
