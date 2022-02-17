@@ -1,12 +1,23 @@
 const {
   fetchArticleById,
   sendArticleVotesById,
+  fetchArticles,
 } = require("../models/articles.models.js");
 
 exports.getArticleById = (req, res, next) => {
   fetchArticleById(req)
     .then((singleArticle) => {
       return res.status(200).send({ article: singleArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getArticles = (req, res, next) => {
+  fetchArticles()
+    .then((articleList) => {
+      res.status(200).send({ articles: articleList });
     })
     .catch((err) => {
       next(err);
