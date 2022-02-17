@@ -5,7 +5,7 @@ exports.fetchArticleById = async (req) => {
   const articleId = req.params.article_id;
   const articleIdResult = await db.query(
     `
-  SELECT *, 
+  SELECT *,
   COUNT(comments.article_id) AS comment_count
   FROM articles 
   LEFT JOIN comments
