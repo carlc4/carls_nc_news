@@ -62,62 +62,20 @@ describe("GET /api/articles/:article_id", () => {
         );
       });
   });
-  // test("Status: 200, returns a specific object based on input", () => {
-  //   return request(app)
-  //     .get("/api/articles/1")
-  //     .expect(200)
-  //     .then(({ body }) => {
-  //       expect(body.article).toEqual({
-  //         article_id: 1,
-  //         title: "Living in the shadow of a great man",
-  //         topic: "mitch",
-  //         author: "butter_bridge",
-  //         body: "I find this existence challenging",
-  //         comment_count: expect.any(Number),
-  //         created_at: expect.any(String),
-  //         votes: expect.any(Number),
-  //       });
-  //     });
-  // });
-});
-describe("REFACTOR - GET /api/articles/:article_id", () => {
-  test("Status: 200, returns an updated object", () => {
-    return request(app).get("/api/articles/1").expect(200);
-  });
-  test("Status: 200, returns an updated object with a comment count key", () => {
-    const testObject = { comment_count: "1" };
+  test("Status: 200, returns a specific object based on input", () => {
+    const testObject = {
+      article_id: 1,
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+      votes: expect.any(Number),
+    };
     return request(app)
       .get("/api/articles/1")
       .expect(200)
       .then(({ body }) => {
         expect(body.article).toMatchObject(testObject);
-      });
-  });
-});
-describe("GET /api/users", () => {
-  test("Status: 200", () => {
-    return request(app).get("/api/users").expect(200);
-  });
-  test("Status: 200, returns array of 4 test objects", () => {
-    return request(app)
-      .get("/api/users")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.users).toHaveLength(4);
-      });
-  });
-  test("Status: 200, returns an array of objects with username key", () => {
-    return request(app)
-      .get("/api/users/")
-      .expect(200)
-      .then(({ body }) => {
-        body.users.forEach((username) => {
-          expect(username).toEqual(
-            expect.objectContaining({
-              username: expect.any(String),
-            })
-          );
-        });
       });
   });
 });
@@ -153,6 +111,94 @@ describe("PATCH /api/articles/:article_id", () => {
           body: "I find this existence challenging",
           created_at: expect.any(String),
           votes: 99,
+        });
+      });
+  });
+});
+describe("REFACTOR - GET /api/articles/:article_id", () => {
+  test("Status: 200, returns an updated object", () => {
+    return request(app).get("/api/articles/1").expect(200);
+  });
+  test("Status: 200, returns an updated object with a comment count key", () => {
+    const testObject = { comment_count: "1" };
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject(testObject);
+      });
+  });
+});
+describe("GET /api/articles/:article_id/comments", () => {
+  test("Status: 200", () => {
+    return request(app).get("/api/articles/1/comments/").expect(200);
+  });
+  test("Status: 200, returns an array", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+      });
+  });
+  test("Status: 200, returns an array of comment objects with correct keys", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        body.comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("Status: 200, first comment object matches first entry in test database", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments[0]).toEqual(
+          expect.objectContaining({
+            comment_id: 2,
+            votes: 14,
+            created_at: expect.any(String),
+            author: "butter_bridge",
+            body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          })
+        );
+      });
+  });
+});
+describe("GET /api/users", () => {
+  test("Status: 200", () => {
+    return request(app).get("/api/users").expect(200);
+  });
+  test("Status: 200, returns array of 4 test objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.users).toHaveLength(4);
+      });
+  });
+  test("Status: 200, returns an array of objects with username key", () => {
+    return request(app)
+      .get("/api/users/")
+      .expect(200)
+      .then(({ body }) => {
+        body.users.forEach((username) => {
+          expect(username).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+            })
+          );
         });
       });
   });
@@ -196,7 +242,7 @@ describe("Error handling", () => {
         .get("/api/NOT-A-VALID-URL")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toEqual("Invalid URL Passed");
+          expect(body.message).toEqual("Invalid URL Passed");
         });
     });
   });
@@ -251,6 +297,22 @@ describe("Error handling", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toEqual("Article ID Does Not Exist!");
+        });
+    });
+    test("Status: 400, bad request if article_id is invalid", () => {
+      return request(app)
+        .get("/api/articles/ERROR/comment")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Invalid URL Passed");
+        });
+    });
+    test("Status: 404 if the article is valid format but does not exist", () => {
+      return request(app)
+        .patch("/api/articles/99999/comment")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Invalid URL Passed");
         });
     });
   });

@@ -34,6 +34,16 @@ exports.fetchArticles = async () => {
   return articleResult.rows;
 };
 
+exports.fetchArticleComments = async (id) => {
+  const commentResult = await db.query(
+    `SELECT comment_id, votes, created_at, author, body FROM comments
+  WHERE article_id = $1;
+  `,
+    [id]
+  );
+  return commentResult.rows;
+};
+
 exports.sendArticleVotesById = async (articleId, votes) => {
   if (votes === undefined || votes.length === 0) {
     return Promise.reject({
