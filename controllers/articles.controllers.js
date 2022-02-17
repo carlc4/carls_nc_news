@@ -6,7 +6,7 @@ const {
 exports.getArticleById = (req, res, next) => {
   fetchArticleById(req)
     .then((singleArticle) => {
-      return res.status(200).send({ articles: singleArticle });
+      return res.status(200).send({ article: singleArticle });
     })
     .catch((err) => {
       next(err);
@@ -18,7 +18,7 @@ exports.patchArticleById = (req, res, next) => {
   const votes = req.body.inc_votes;
   sendArticleVotesById(articleID, votes)
     .then((response) => {
-      res.status(200).send({ updatedArticle: response });
+      res.status(200).send({ article: response });
     })
     .catch((err) => {
       next(err);

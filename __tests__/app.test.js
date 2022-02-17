@@ -49,7 +49,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles).toEqual(
+        expect(body.article).toEqual(
           expect.objectContaining({
             article_id: expect.any(Number),
             title: expect.any(String),
@@ -67,7 +67,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles).toEqual({
+        expect(body.article).toEqual({
           article_id: 1,
           title: "Living in the shadow of a great man",
           topic: "mitch",
@@ -92,7 +92,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inc_votes: 1 })
       .expect(200)
       .then(({ body }) => {
-        expect(body.updatedArticle).toEqual({
+        expect(body.article).toEqual({
           article_id: 1,
           title: "Living in the shadow of a great man",
           topic: "mitch",
@@ -109,7 +109,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inc_votes: -1 })
       .expect(200)
       .then(({ body }) => {
-        expect(body.updatedArticle).toEqual({
+        expect(body.article).toEqual({
           article_id: 1,
           title: "Living in the shadow of a great man",
           topic: "mitch",
@@ -166,7 +166,7 @@ describe("Error handling", () => {
         .get("/api/articles/ERROR")
         .expect(400)
         .then(({ body }) => {
-          expect(body.message).toEqual("Article ID Invalid!");
+          expect(body.message).toEqual("Data entry error");
         });
     });
     test("Status: 404, not found if article_id is valid but no records exist", () => {
@@ -183,7 +183,7 @@ describe("Error handling", () => {
         .send({ inc_votes: "ERROR" })
         .expect(400)
         .then(({ body }) => {
-          expect(body.message).toEqual("Article ID Invalid!");
+          expect(body.message).toEqual("Data entry error");
         });
     });
     test("Status: 400 if the url is not valid", () => {
@@ -192,7 +192,7 @@ describe("Error handling", () => {
         .send({ inc_votes: 10 })
         .expect(400)
         .then(({ body }) => {
-          expect(body.message).toEqual("Article ID Invalid!");
+          expect(body.message).toEqual("Data entry error");
         });
     });
     test("Status: 400 if the object key is not valid", () => {

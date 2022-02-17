@@ -10,7 +10,7 @@ exports.customErrors = (err, req, res, next) => {
 
 exports.psqlErrors = (err, req, res, next) => {
   if (err.code === "22P02") {
-    res.status(400).send({ message: "Article ID Invalid!" });
+    res.status(400).send({ message: "Data entry error" });
   } else next(err);
 };
 
