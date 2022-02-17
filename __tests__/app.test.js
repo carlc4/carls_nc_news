@@ -79,8 +79,36 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
-describe("PATCH /api/articles/:article_id", () => {
+describe("GET /api/users", () => {
   test("Status: 200", () => {
+    return request(app).get("/api/users").expect(200);
+  });
+  test("Status: 200, returns array of 4 test objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.users).toHaveLength(4);
+      });
+  });
+  test("Status: 200, returns an array of objects with username key", () => {
+    return request(app)
+      .get("/api/users/")
+      .expect(200)
+      .then(({ body }) => {
+        body.users.forEach((username) => {
+          expect(username).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+});
+
+describe("Error handling", () => {
+  test("Status: 404, returns url not found message", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({ inc_votes: 1 })
