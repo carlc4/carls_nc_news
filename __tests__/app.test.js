@@ -162,19 +162,13 @@ describe("GET/api/articles", () => {
         });
       });
   });
-  test.only("Status: 200, objects are sorted in descending order", () => {
+  test("Status: 200, objects are sorted in descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        console.log(body.articles);
-        expect(body.articles[0]).toEqual({
-          article_id: 3,
-          title: "Eight pug gifs that remind me of mitch",
-          topic: "mitch",
-          author: "icellusedkars",
-          created_at: expect.any(String),
-          votes: expect.any(Number),
+        expect(body.articles).toBeSortedBy("created_at", {
+          descending: true,
         });
       });
   });
