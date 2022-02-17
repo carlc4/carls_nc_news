@@ -80,7 +80,7 @@ describe("GET /api/articles/:article_id", () => {
   //     });
   // });
 });
-describe.only("REFACTOR - GET /api/articles/:article_id", () => {
+describe("REFACTOR - GET /api/articles/:article_id", () => {
   test("Status: 200, returns an updated object", () => {
     return request(app).get("/api/articles/1").expect(200);
   });
