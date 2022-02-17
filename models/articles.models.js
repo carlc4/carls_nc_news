@@ -32,12 +32,6 @@ exports.fetchArticles = async () => {
   ON articles.article_id = comments.article_id 
   GROUP BY articles.article_id, comments.comment_id
   ORDER BY articles.created_at DESC`);
-
-  // `
-  // SELECT article_id, title, topic, author, created_at, votes
-  // FROM articles
-  // ORDER BY created_at DESC;
-  // `
   return articleResult.rows;
 };
 

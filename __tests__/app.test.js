@@ -164,7 +164,6 @@ describe("GET/api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toBeInstanceOf(Array);
-        expect(body.articles).toHaveLength(12);
         body.articles.forEach((article) => {
           expect(article).toMatchObject({
             author: expect.any(String),
@@ -185,6 +184,15 @@ describe("GET/api/articles", () => {
         expect(body.articles).toBeSortedBy("created_at", {
           descending: true,
         });
+      });
+  });
+  test("Status: 200, GET request to this endpoint includes comment count for the articles", () => {
+    const testObject = { comment_count: "1" };
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject(testObject);
       });
   });
 });
