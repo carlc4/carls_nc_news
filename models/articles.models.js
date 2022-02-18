@@ -69,3 +69,31 @@ exports.sendArticleVotesById = async (articleId, votes) => {
     });
   } else return result.rows[0];
 };
+
+exports.sendArticleComment = async (articleID, username, comment) => {
+  if (
+    typeof comment !== "string" ||
+    comment === undefined ||
+    username === undefined
+  ) {
+    return Promise.reject({ status: 400, message: "Missing info" });
+  }
+
+  const registeredUser = await db.query(
+    `SELECT * FROM USERS WHERE username = $1;`,
+    [username]
+  );
+  if (registeredUser.rows.length === 0) {
+    return Promise.reject({
+      status: 404,
+      message: "Username not found, please register first",
+    });
+  } else {
+    const result = await db.query(
+      `INSERT INTO comments(body, author, article_id) 
+    VALUES ($1, $2, $3) RETURNING *;`,
+      [comment, username, articleID]
+    );
+    return result.rows[0];
+  }
+};
