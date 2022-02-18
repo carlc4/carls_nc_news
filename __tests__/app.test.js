@@ -408,6 +408,14 @@ describe("Error handling", () => {
           expect(body.message).toEqual("Topic does not exist");
         });
     });
+    test("Status: 404 if the topic exists but the article doesn't", () => {
+      return request(app)
+        .get("/api/articles/9999/?sort_by=created_at&&order=asc&&topic=cats")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Article ID Does Not Exist!");
+        });
+    });
   });
   describe("Comment Errors", () => {
     test("Status: 400 if the article is valid format but does not exist", () => {
