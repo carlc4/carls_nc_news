@@ -1,6 +1,7 @@
 const express = require("express");
 const { getUsers } = require("./controllers/users.controllers");
 const { getTopics } = require("./controllers/topics.controllers");
+const { deleteCommentById } = require("./controllers/comments.controllers");
 
 const {
   getArticleById,
@@ -34,6 +35,8 @@ app.get("/api/users/", getUsers);
 app.patch("/api/articles/:article_id", patchArticleById);
 
 app.post("/api/articles/:article_id/comments", postArticleComment);
+
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.all("/api/*", invalidUrlError);
 
