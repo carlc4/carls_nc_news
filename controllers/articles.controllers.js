@@ -17,7 +17,11 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles()
+  const sortBy = req.query.sort_by;
+  const order = req.query.order;
+  const topic = req.query.topic;
+
+  fetchArticles(sortBy, order, topic)
     .then((articleList) => {
       res.status(200).send({ articles: articleList });
     })
@@ -55,8 +59,8 @@ exports.postArticleComment = (req, res, next) => {
   const comment = req.body.comment;
 
   sendArticleComment(articleID, username, comment)
-    .then((response) => {
-      res.status(200).send({ comment: response });
+    .then((comment) => {
+      res.status(200).send({ comment });
     })
     .catch((err) => {
       next(err);

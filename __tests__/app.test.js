@@ -254,6 +254,55 @@ describe("GET/api/articles", () => {
       });
   });
 });
+describe("REFACTOR GET/api/articles", () => {
+  test("Status: 200, responds with array of article objects sorted by date", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at&&order=desc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test("Status: 200, responds with array of article objects sorted by date in ascending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at&&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", {
+          ascending: true,
+        });
+      });
+  });
+  test("Status: 200, responds with array of article objects sorted by author", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("author", {
+          descending: true,
+        });
+      });
+  });
+  test("Status: 200, responds with array of article objects filtered by topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(1);
+      });
+  });
+  test("Status: 200, responds with array of article objects filtered by topic in ascending date order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at&&order=asc&&topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(11);
+        expect(body.articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+});
 
 describe("Error handling", () => {
   describe("General errors", () => {
@@ -333,6 +382,38 @@ describe("Error handling", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toEqual("Invalid URL Passed");
+        });
+    });
+    test("Status: 400 if the sort is invalid", () => {
+      return request(app)
+        .get("/api/articles?sort_by=ERROR&&order=asc&&topic=mitch")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Invalid sort query");
+        });
+    });
+    test("Status: 400 if the order by is invalid", () => {
+      return request(app)
+        .get("/api/articles?sort_by=created_at&&order=ERROR&&topic=mitch")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Invalid order query");
+        });
+    });
+    test("Status: 404 if the topic does not exist in the topic table", () => {
+      return request(app)
+        .get("/api/articles?sort_by=created_at&&order=asc&&topic=ERROR")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Topic does not exist");
+        });
+    });
+    test("Status: 404 if the topic exists but there are no associated articles", () => {
+      return request(app)
+        .get("/api/articles?sort_by=created_at&&order=asc&&topic=paper")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Topic has no matching articles");
         });
     });
   });
