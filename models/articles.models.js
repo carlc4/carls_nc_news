@@ -56,6 +56,17 @@ exports.fetchArticles = async (
     if (topicResult.rows.length === 0) {
       return Promise.reject({ status: 404, message: "Topic does not exist" });
     }
+    const articleLookup = await db.query(
+      `SELECT * FROM articles WHERE topic = $1;`,
+      [topic]
+    );
+    if (articleLookup.rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        message: "Topic has no matching articles",
+      });
+    }
+
     topicArray.push(topic);
     sqlQuery += ` WHERE topic = $1 `;
   }

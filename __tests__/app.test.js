@@ -408,12 +408,12 @@ describe("Error handling", () => {
           expect(body.message).toEqual("Topic does not exist");
         });
     });
-    test("Status: 404 if the topic exists but the article doesn't", () => {
+    test("Status: 404 if the topic exists but there are no associated articles", () => {
       return request(app)
-        .get("/api/articles/9999/?sort_by=created_at&&order=asc&&topic=cats")
+        .get("/api/articles?sort_by=created_at&&order=asc&&topic=paper")
         .expect(404)
         .then(({ body }) => {
-          expect(body.message).toEqual("Article ID Does Not Exist!");
+          expect(body.message).toEqual("Topic has no matching articles");
         });
     });
   });
