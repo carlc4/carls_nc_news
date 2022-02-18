@@ -176,6 +176,18 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+describe("POST /api/articles/:article_id/comments", () => {
+  test("Status: 200, comment object is returned", () => {
+    const testObject = { body: "Test comment" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ username: "butter_bridge", comment: "Test comment" })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject(testObject);
+      });
+  });
+});
 describe("GET /api/users", () => {
   test("Status: 200", () => {
     return request(app).get("/api/users").expect(200);
@@ -313,6 +325,55 @@ describe("Error handling", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toEqual("Invalid URL Passed");
+        });
+    });
+  });
+  describe("Comment Errors", () => {
+    test("Status: 400 if the article is valid format but does not exist", () => {
+      return request(app)
+        .post("/api/articles/99999/comments")
+        .send({ username: "butter_bridge", comment: "Test comment" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Article ID Does Not Exist");
+        });
+    });
+    test("Status: 404 if username is not in the usernames database", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ username: "TEST", comment: "Test comment" })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toEqual(
+            "Username not found, please register first"
+          );
+        });
+    });
+    test("Status: 400 if comment is incorrect type", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ username: "butter_bridge", comment: 1 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Missing info");
+        });
+    });
+    test("Status: 400 if username is missing", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ comment: 1 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Missing info");
+        });
+    });
+    test("Status: 400 if comment is missing", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ username: "butter_bridge" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Missing info");
         });
     });
   });

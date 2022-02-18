@@ -7,6 +7,7 @@ const {
   patchArticleById,
   getArticles,
   getArticleComments,
+  postArticleComment,
 } = require("./controllers/articles.controllers");
 
 const {
@@ -31,6 +32,8 @@ app.get("/api/articles/:article_id/comments", getArticleComments);
 app.get("/api/users/", getUsers);
 
 app.patch("/api/articles/:article_id", patchArticleById);
+
+app.post("/api/articles/:article_id/comments", postArticleComment);
 
 app.all("/api/*", invalidUrlError);
 
