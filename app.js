@@ -21,6 +21,8 @@ const {
   customErrors,
 } = require("./errors/app.errors");
 
+const { apiJson } = require("./controllers/api.controller");
+
 const app = express();
 
 app.use(express.json());
@@ -44,6 +46,8 @@ app.post("/api/articles/:article_id/comments", postArticleComment);
 app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.all("/api/*", invalidUrlError);
+
+app.use("/api", apiJson);
 
 app.use(customErrors);
 

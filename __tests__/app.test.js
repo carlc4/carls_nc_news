@@ -334,6 +334,22 @@ describe("REFACTOR GET/api/articles", () => {
       });
   });
 });
+describe("DELETE/api/comments/1", () => {
+  test("Status: 204, comment is deleted", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(() => {
+        // this test checks for a 204 but also requests the entire comments table and checks the length has been reduced by 1
+        return request(app)
+          .get("/api/comments")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments).toHaveLength(17);
+          });
+      });
+  });
+});
 
 describe("Error handling", () => {
   describe("General errors", () => {
@@ -497,37 +513,28 @@ describe("Error handling", () => {
         });
     });
   });
+  describe("Delete Comment Errors", () => {
+    test("Status: 400, comment is not found", () => {
+      return request(app)
+        .delete("/api/comments/99999")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Comment ID Does Not Exist!");
+        });
+    });
+    test("Status: 404, comment is invalid", () => {
+      return request(app)
+        .delete("/api/comments/ERROR")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Bad request");
+        });
+    });
+  });
 });
 
-describe("DELETE/api/comments/1", () => {
-  test("Status: 204, comment is deleted", () => {
-    return request(app)
-      .delete("/api/comments/1")
-      .expect(204)
-      .then(() => {
-        // this test checks for a 204 but also requests the entire comments table and checks the length has been reduced by 1
-        return request(app)
-          .get("/api/comments")
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.comments).toHaveLength(17);
-          });
-      });
-  });
-  test("Status: 400, comment is not found", () => {
-    return request(app)
-      .delete("/api/comments/99999")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toEqual("Comment ID Does Not Exist!");
-      });
-  });
-  test("Status: 404, comment is invalid", () => {
-    return request(app)
-      .delete("/api/comments/ERROR")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toEqual("Bad request");
-      });
+describe("GET /api", () => {
+  test("Exports the API endpoints file as a JSON object", () => {
+    return request(app).get("/api").expect(200);
   });
 });
