@@ -10,6 +10,6 @@ apiRouter.use("/topics", topicsRouter);
 apiRouter.use("/articles", articleRouter);
 apiRouter.use("/comments", commentsRouter);
 apiRouter.use("/users", usersRouter);
-// apiRouter.route("/").get(apiJson); <<< this needs to be fixed
+apiRouter.route("/").get(apiJson.apiJson);
 
 module.exports = apiRouter;

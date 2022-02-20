@@ -533,8 +533,8 @@ describe("Error handling", () => {
   });
 });
 
-// describe("GET /api", () => {
-//   test("Exports the API endpoints file as a JSON object", () => {
-//     return request(app).get("/api").expect(200);
-//   });
-// });
+describe("GET /api", () => {
+  test("Exports the API endpoints file as a JSON object", () => {
+    return request(app).get("/api").expect(200);
+  });
+});
