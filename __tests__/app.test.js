@@ -556,7 +556,7 @@ describe("Error handling", () => {
         });
     });
   });
-  describe.only("Retrieve user info by ID errors", () => {
+  describe("Retrieve user info by ID errors", () => {
     test("Status: 400, user is not found", () => {
       return request(app)
         .get("/api/users/ERROR")
