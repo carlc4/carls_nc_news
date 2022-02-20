@@ -350,6 +350,31 @@ describe("DELETE/api/comments/1", () => {
       });
   });
 });
+describe("GET /api/users/:username", () => {
+  test("Status: 200", () => {
+    return request(app).get("/api/users/butter_bridge").expect(200);
+  });
+  test("Status: 200, returns a specific object with corresponding keys based on input", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.user).toEqual(
+          expect.objectContaining({
+            username: "butter_bridge",
+            name: "jonny",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          })
+        );
+      });
+  });
+});
+describe("GET /api", () => {
+  test("Exports the API endpoints file as a JSON object", () => {
+    return request(app).get("/api").expect(200);
+  });
+});
 
 describe("Error handling", () => {
   describe("General errors", () => {
@@ -531,10 +556,14 @@ describe("Error handling", () => {
         });
     });
   });
-});
-
-describe("GET /api", () => {
-  test("Exports the API endpoints file as a JSON object", () => {
-    return request(app).get("/api").expect(200);
+  describe.only("Retrieve user info by ID errors", () => {
+    test("Status: 400, user is not found", () => {
+      return request(app)
+        .get("/api/users/ERROR")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("User does not exist");
+        });
+    });
   });
 });
