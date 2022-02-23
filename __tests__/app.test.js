@@ -71,6 +71,40 @@ describe("GET /api/comments", () => {
       });
   });
 });
+describe("PATCH /api/comments/:comment_id", () => {
+  test("Status: 200, votes key on object updated when positive number passed in", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: 1,
+          article_id: expect.any(Number),
+          author: "butter_bridge",
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          created_at: expect.any(String),
+          votes: 17,
+        });
+      });
+  });
+  test("Status: 200, votes key on object updated when negative number passed in", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: -1 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: 1,
+          article_id: expect.any(Number),
+          author: "butter_bridge",
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          created_at: expect.any(String),
+          votes: 15,
+        });
+      });
+  });
+});
 describe("GET /api/articles/:article_id", () => {
   test("Status: 200", () => {
     return request(app).get("/api/articles/1").expect(200);
@@ -535,6 +569,42 @@ describe("Error handling", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toEqual("Missing info");
+        });
+    });
+    test("Status: 400 if the vote change is not a number", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: "ERROR" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Data entry error");
+        });
+    });
+    test("Status: 404 if the url is not valid", () => {
+      return request(app)
+        .patch("/api/comments/ERROR")
+        .send({ inc_votes: 10 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Comment ID not found!");
+        });
+    });
+    test("Status: 400 if the object key is not valid", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ INVALIDKEY: 10 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Data entry error");
+        });
+    });
+    test("Status: 400 if the comment is valid format but does not exist", () => {
+      return request(app)
+        .patch("/api/comments/99999")
+        .send({ inc_votes: 1 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Comment ID Does Not Exist!");
         });
     });
   });

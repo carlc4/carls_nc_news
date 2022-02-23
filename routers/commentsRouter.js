@@ -4,11 +4,14 @@ const commentsRouter = express.Router();
 const {
   getComments,
   deleteCommentById,
+  patchCommentsById,
 } = require("../controllers/comments.controllers");
 // const methodError = require("../errors/app.errors");
 
-commentsRouter.route("/:comment_id").delete(deleteCommentById);
-//   .patch(methodError)
+commentsRouter
+  .route("/:comment_id")
+  .delete(deleteCommentById)
+  .patch(patchCommentsById);
 //   .all(methodError);
 
 commentsRouter.route("/").get(getComments);
