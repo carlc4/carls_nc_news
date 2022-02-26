@@ -6,17 +6,20 @@ const {
   deleteCommentById,
   patchCommentsById,
 } = require("../controllers/comments.controllers");
-// const methodError = require("../errors/app.errors");
+const { methodError } = require("../errors/app.errors");
 
 commentsRouter
   .route("/:comment_id")
+  .get(methodError)
+  .post(methodError)
   .delete(deleteCommentById)
   .patch(patchCommentsById);
-//   .all(methodError);
 
-commentsRouter.route("/").get(getComments);
-//   .patch(methodError)
-//   .all(methodError);
-//   .delete(methodError)
+commentsRouter
+  .route("/")
+  .get(getComments)
+  .patch(methodError)
+  .post(methodError)
+  .delete(methodError);
 
 module.exports = commentsRouter;

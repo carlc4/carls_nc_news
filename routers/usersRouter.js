@@ -5,12 +5,14 @@ const {
   getUsers,
   getUsernameById,
 } = require("../controllers/users.controllers");
-// const methodError = require("../errors/app.errors");
+const { methodError } = require("../errors/app.errors");
 
-usersRouter.route("/").get(getUsers);
-//   .patch(methodError)
-//   .all(methodError);
-//   .delete(methodError)
+usersRouter
+  .route("/")
+  .get(getUsers)
+  .patch(methodError)
+  .post(methodError)
+  .delete(methodError);
 
 usersRouter.route("/:username").get(getUsernameById);
 

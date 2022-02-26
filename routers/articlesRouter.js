@@ -9,27 +9,27 @@ const {
   postArticleComment,
   postArticles,
 } = require("../controllers/articles.controllers");
-// const methodError = require("../errors/app.errors");
+const { methodError } = require("../errors/app.errors");
 
-articlesRouter.route("/").get(getArticles).post(postArticles);
-//   .patch(methodError)
-//   .all(methodError);
-//   .delete(methodError)
+articlesRouter
+  .route("/")
+  .get(getArticles)
+  .post(postArticles)
+  .patch(methodError)
+  .delete(methodError);
 
 articlesRouter
   .route("/:article_id")
   .get(getArticleById)
-  .patch(patchArticleById);
-//   .delete(deleteCommentById);
-//   .post(methodError)
-//   .all(methodError);
+  .post(methodError)
+  .patch(patchArticleById)
+  .delete(methodError);
 
 articlesRouter
   .route("/:article_id/comments")
   .get(getArticleComments)
-  .post(postArticleComment);
-//   .patch(patchArticleById);
-//   .delete(deleteCommentById);
-//   .all(methodError);
+  .post(postArticleComment)
+  .patch(methodError)
+  .delete(methodError);
 
 module.exports = articlesRouter;

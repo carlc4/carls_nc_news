@@ -20,3 +20,7 @@ exports.serverErrors = (err, req, res, next) => {
   console.log(err);
   res.status(500).send({ message: "Server Error!" });
 };
+
+exports.methodError = (req, res, next) => {
+  res.status(405).send({ message: "Method not allowed on this route" });
+};
