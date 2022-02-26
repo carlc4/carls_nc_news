@@ -26,6 +26,8 @@ exports.fetchArticleById = async (articleId) => {
 };
 
 exports.fetchArticles = async (
+  limit = 10,
+  p = 1,
   sort_by = "created_at",
   order = "desc",
   topic
@@ -46,6 +48,14 @@ exports.fetchArticles = async (
   if (!["asc", "desc"].includes(order)) {
     return Promise.reject({ status: 400, message: "Invalid order query" });
   }
+  if (isNaN(p)) {
+    return Promise.reject({ status: 400, message: "Invalid page query" });
+  }
+  if (isNaN(limit)) {
+    return Promise.reject({ status: 400, message: "Invalid limit query" });
+  }
+
+  const offset = (p - 1) * limit;
 
   topicArray = [];
   let sqlQuery = `SELECT articles.*, COUNT (comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`;
@@ -68,13 +78,11 @@ exports.fetchArticles = async (
         message: "Topic has no matching articles",
       });
     }
-
     topicArray.push(topic);
     sqlQuery += ` WHERE topic = $1 `;
   }
 
-  sqlQuery += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
-
+  sqlQuery += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order} LIMIT ${limit} OFFSET ${offset}`;
   sqlQuery += ";";
   const articleResult = await db.query(sqlQuery, topicArray);
   return articleResult.rows;
