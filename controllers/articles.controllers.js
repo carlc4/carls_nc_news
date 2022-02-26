@@ -21,8 +21,10 @@ exports.getArticles = (req, res, next) => {
   const sortBy = req.query.sort_by;
   const order = req.query.order;
   const topic = req.query.topic;
+  const limit = req.query.limit;
+  const p = req.query.p;
 
-  fetchArticles(sortBy, order, topic)
+  fetchArticles(limit, p, sortBy, order, topic)
     .then((articles) => {
       res.status(200).send({ articles });
     })

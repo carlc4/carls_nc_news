@@ -352,7 +352,7 @@ describe("GET/api/articles", () => {
 describe("REFACTOR GET/api/articles", () => {
   test("Status: 200, responds with array of article objects sorted by date", () => {
     return request(app)
-      .get("/api/articles?sort_by=created_at&&order=desc")
+      .get("/api/articles?sort_by=created_at&&order=desc&&limit=10&&p=1")
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toBeSortedBy("created_at", {
@@ -388,15 +388,35 @@ describe("REFACTOR GET/api/articles", () => {
         expect(body.articles).toHaveLength(1);
       });
   });
-  test("Status: 200, responds with array of article objects filtered by topic in ascending date order", () => {
+  test("Status: 200, responds with array of article objects filtered by topic in ascending date order limited to 10", () => {
     return request(app)
       .get("/api/articles?sort_by=created_at&&order=asc&&topic=mitch")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles).toHaveLength(11);
+        expect(body.articles).toHaveLength(10);
         expect(body.articles).toBeSortedBy("created_at", { ascending: true });
       });
   });
+  test("Status: 200, responds with an array of articles limited by the limit query (5)", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at&&order=asc&&topic=mitch&&limit=5")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(5);
+        expect(body.articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  test("Status: 200, responds with an array of articles listing one article on final page", () => {
+    return request(app)
+      .get(
+        "/api/articles?sort_by=created_at&&order=asc&&topic=mitch&&limit=10&&p=2"
+      )
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(1);
+        expect(body.articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  }); // the above test sets the page to 2, where there should only be one item listed as there are 11 in total
 });
 describe("POST /api/articles/", () => {
   test("Status: 200, article is posted to table", () => {
@@ -675,6 +695,23 @@ describe("Error handling", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toEqual("Please complete all fields");
+        });
+    });
+
+    test("Status 400 - p query is invalid", () => {
+      return request(app)
+        .get("/api/articles?p=ERROR")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid page query");
+        });
+    });
+    test("Status 400 - limit is not a number", () => {
+      return request(app)
+        .get("/api/articles?limit=ERROR")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid limit query");
         });
     });
   });
