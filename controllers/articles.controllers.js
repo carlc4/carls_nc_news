@@ -35,7 +35,10 @@ exports.getArticles = (req, res, next) => {
 
 exports.getArticleComments = (req, res, next) => {
   const articleID = req.params.article_id;
-  fetchArticleComments(articleID)
+  const limit = req.query.limit;
+  const p = req.query.p;
+
+  fetchArticleComments(articleID, limit, p)
     .then((articleComments) => {
       res.status(200).send({ comments: articleComments });
     })

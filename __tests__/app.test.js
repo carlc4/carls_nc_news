@@ -270,6 +270,33 @@ describe("GET /api/articles/:article_id/comments", () => {
         );
       });
   });
+  test("Status: 200, returns an array limited to 10 items by default", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=10&&p=1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments).toHaveLength(10);
+      });
+  });
+  test("Status: 200, returns an array limited to 5 items when L is passed in the query", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments).toHaveLength(5);
+      });
+  });
+  test("Status: 200, returns an array limited to 5 items when L is passed in the query", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5&&p=3")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments).toHaveLength(1);
+      }); // expects a return of 1 as there are 11 comments, the third page has a single comment when l = 5
+  });
 });
 describe("POST /api/articles/:article_id/comments", () => {
   test("Status: 200, comment object is returned", () => {
@@ -697,7 +724,6 @@ describe("Error handling", () => {
           expect(body.message).toEqual("Please complete all fields");
         });
     });
-
     test("Status 400 - p query is invalid", () => {
       return request(app)
         .get("/api/articles?p=ERROR")
@@ -712,6 +738,22 @@ describe("Error handling", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Invalid limit query");
+        });
+    });
+    test("Status 400 - comments p query is invalid", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=ERROR")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Query parameters invalid");
+        });
+    });
+    test("Status 400 - comments limit is not a number", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=ERROR")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Query parameters invalid");
         });
     });
   });

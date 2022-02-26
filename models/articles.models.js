@@ -4,7 +4,6 @@ const { fetchUserById } = require("./users.models");
 const { fetchTopicBySlug } = require("./topics.models");
 
 exports.fetchArticleById = async (articleId) => {
-  // const articleId = req.params.article_id;
   const articleIdResult = await db.query(
     `
   SELECT articles.*,
@@ -88,12 +87,19 @@ exports.fetchArticles = async (
   return articleResult.rows;
 };
 
-exports.fetchArticleComments = async (id) => {
+exports.fetchArticleComments = async (id, limit = 10, p = 1) => {
+  if (isNaN(limit) || isNaN(p)) {
+    return Promise.reject({
+      status: 400,
+      message: "Query parameters invalid",
+    });
+  }
+  const offset = (p - 1) * limit;
   const commentResult = await db.query(
     `SELECT comment_id, votes, created_at, author, body FROM comments
-  WHERE article_id = $1;
+  WHERE article_id = $1 LIMIT $2 OFFSET $3;
   `,
-    [id]
+    [id, limit, offset]
   );
   return commentResult.rows;
 };
