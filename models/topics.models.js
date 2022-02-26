@@ -30,3 +30,25 @@ exports.fetchTopicBySlug = async (slug) => {
     });
   } else return topicResult.rows;
 };
+
+exports.addTopic = async (slug, description) => {
+  if (
+    !slug ||
+    slug === undefined ||
+    !description ||
+    description === undefined
+  ) {
+    return Promise.reject({
+      status: 400,
+      message: "Invalid input",
+    });
+  }
+  const result = await db.query(
+    `INSERT INTO topics (slug, description)
+    VALUES ($1, $2) RETURNING *`,
+    [slug, description]
+  );
+
+  const newTopic = result.rows[0];
+  return newTopic;
+};

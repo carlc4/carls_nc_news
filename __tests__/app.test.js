@@ -40,6 +40,34 @@ describe("GET /api/topics", () => {
       });
   });
 });
+describe("POST /api/topics", () => {
+  test("Status: 200, topic is added, topic object is returned", () => {
+    const testObject = { body: "Test comment" };
+    return request(app)
+      .post("/api/topics")
+      .send({ slug: "Test", description: "Test topic" })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.topic.slug).toEqual("Test");
+        expect(body.topic.description).toEqual("Test topic");
+      });
+  });
+  test("Status: 200, topic is added, topic table is updated", () => {
+    const testObject = { body: "Test comment" };
+    return request(app)
+      .post("/api/topics")
+      .send({ slug: "Test", description: "Test topic" })
+      .expect(200)
+      .then(() => {
+        return request(app)
+          .get("/api/topics")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.topics).toHaveLength(4);
+          }); // this test adds a comment and then checks that the number of topic objects has been updated to 4
+      });
+  });
+});
 describe("GET /api/topics", () => {
   test("Status: 200, returns an array of topic objects with matching slug", () => {
     return request(app)
@@ -532,7 +560,7 @@ describe("Error handling", () => {
     });
   });
   describe("Topic Errors", () => {
-    test("Status: 404 if the slug has no matches", () => {
+    test("Status: 400 if the slug has no matches", () => {
       return request(app)
         .get("/api/topics/")
         .send({ slug: "TEST" })
@@ -541,7 +569,26 @@ describe("Error handling", () => {
           expect(body.message).toEqual("Topic does not exist");
         });
     });
+    test("Status: 400 if object keys are invalid", () => {
+      return request(app)
+        .post("/api/topics/")
+        .send({ ERROR: "TEST", description: "Test Description" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Invalid input");
+        });
+    });
+    test("Status: 400 if object keys are invalid", () => {
+      return request(app)
+        .post("/api/topics/")
+        .send({ slug: "TEST", ERROR: "Test Description" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Invalid input");
+        });
+    });
   });
+
   describe("Article errors", () => {
     test("Status: 400, not found if article_id is invalid", () => {
       return request(app)

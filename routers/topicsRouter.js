@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const topicsRouter = express.Router();
-const { getTopics } = require("../controllers/topics.controllers");
+const { getTopics, postTopics } = require("../controllers/topics.controllers");
 const { methodError } = require("../errors/app.errors");
 
 topicsRouter
@@ -9,6 +9,6 @@ topicsRouter
   .get(getTopics)
   .patch(methodError)
   .delete(methodError)
-  .post(methodError);
+  .post(postTopics);
 
 module.exports = topicsRouter;

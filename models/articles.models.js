@@ -129,7 +129,6 @@ exports.sendArticle = async (author, title, body, topic) => {
   const returnedArticle = await exports.fetchArticleById(articleId);
   return returnedArticle;
 };
-// };
 
 exports.sendArticleVotesById = async (articleId, votes) => {
   if (votes === undefined || votes.length === 0) {
