@@ -1,4 +1,8 @@
-const { fetchTopics, fetchTopicBySlug } = require("../models/topics.models");
+const {
+  fetchTopics,
+  fetchTopicBySlug,
+  addTopic,
+} = require("../models/topics.models");
 
 exports.getTopics = (req, res, next) => {
   if (req.body.slug) {
@@ -17,4 +21,17 @@ exports.getTopics = (req, res, next) => {
       .catch((err) => {
         next(err);
       });
+};
+
+exports.postTopics = (req, res, next) => {
+  const slug = req.body.slug;
+  const description = req.body.description;
+
+  addTopic(slug, description)
+    .then((topic) => {
+      res.status(200).send({ topic });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
