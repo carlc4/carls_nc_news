@@ -1,11 +1,20 @@
-const { fetchTopics } = require("../models/topics.models");
+const { fetchTopics, fetchTopicBySlug } = require("../models/topics.models");
 
 exports.getTopics = (req, res, next) => {
-  fetchTopics()
-    .then((topics) => {
-      res.status(200).send({ topics });
-    })
-    .catch((err) => {
-      next(err);
-    });
+  if (req.body.slug) {
+    fetchTopicBySlug(req.body.slug)
+      .then((topics) => {
+        return res.status(200).send({ topics });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  } else
+    fetchTopics()
+      .then((topics) => {
+        res.status(200).send({ topics });
+      })
+      .catch((err) => {
+        next(err);
+      });
 };

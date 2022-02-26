@@ -40,6 +40,35 @@ describe("GET /api/topics", () => {
       });
   });
 });
+describe("GET /api/topics", () => {
+  test("Status: 200, returns an array of topic objects with matching slug", () => {
+    return request(app)
+      .get("/api/topics")
+      .send({
+        slug: "mitch",
+      })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.topics).toBeInstanceOf(Array);
+        expect(body.topics).toHaveLength(1);
+        expect(body.topics[0].slug).toEqual("mitch");
+      });
+  });
+  test("Status: 200 errors in the body return a normal GET request result", () => {
+    return request(app)
+      .get("/api/topics/")
+      .send({ TEST: "TEST" })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.topics[0]).toEqual(
+          expect.objectContaining({
+            slug: expect.any(String),
+            description: expect.any(String),
+          })
+        );
+      });
+  });
+});
 describe("GET /api/comments", () => {
   test("Status: 200", () => {
     return request(app).get("/api/comments").expect(200);
@@ -133,7 +162,8 @@ describe("GET /api/articles/:article_id", () => {
       title: "Living in the shadow of a great man",
       topic: "mitch",
       author: "butter_bridge",
-      body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+      // body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+      body: "I find this existence challenging",
       votes: expect.any(Number),
     };
     return request(app)
@@ -368,6 +398,39 @@ describe("REFACTOR GET/api/articles", () => {
       });
   });
 });
+describe("POST /api/articles/", () => {
+  test("Status: 200, article is posted to table", () => {
+    return request(app)
+      .post("/api/articles/")
+      .send({
+        author: "butter_bridge",
+        title: "Test",
+        body: "Test article text",
+        topic: "mitch",
+      })
+      .expect(200);
+  });
+  test("Status: 200, article object is returned", () => {
+    const testObject = {
+      author: "butter_bridge",
+      title: "Test",
+      body: "Test article text",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles/")
+      .send({
+        author: "butter_bridge",
+        title: "Test",
+        body: "Test article text",
+        topic: "mitch",
+      })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject(testObject);
+      });
+  });
+});
 describe("DELETE/api/comments/1", () => {
   test("Status: 204, comment is deleted", () => {
     return request(app)
@@ -418,6 +481,17 @@ describe("Error handling", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toEqual("Invalid URL Passed");
+        });
+    });
+  });
+  describe("Topic Errors", () => {
+    test("Status: 404 if the slug has no matches", () => {
+      return request(app)
+        .get("/api/topics/")
+        .send({ slug: "TEST" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Topic does not exist");
         });
     });
   });
@@ -522,6 +596,87 @@ describe("Error handling", () => {
           expect(body.message).toEqual("Topic has no matching articles");
         });
     });
+    test("Status: 400 if the topic is not in the topics table", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "butter_bridge",
+          title: "Test",
+          body: "Test article text",
+          topic: "TEST",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Topic does not exist");
+        });
+    });
+    test("Status: 400 if the author is not in the authors table", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "TEST",
+          title: "Test",
+          body: "Test article text",
+          topic: "mitch",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("User does not exist");
+        });
+    });
+    test("Status: 400 if there is no body text", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "butter_bridge",
+          title: "Test",
+          topic: "mitch",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Please complete all fields");
+        });
+    });
+    test("Status: 400 if there is no title text", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "butter_bridge",
+          body: "Test",
+          topic: "mitch",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Please complete all fields");
+        });
+    });
+    test("Status: 400 if there is no topic text", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "butter_bridge",
+          body: "Test",
+          title: "Test",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Please complete all fields");
+        });
+    });
+    test("Status: 400 if body is empty", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "butter_bridge",
+          title: "Test",
+          topic: "mitch",
+          body: "",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Please complete all fields");
+        });
+    });
   });
   describe("Comment Errors", () => {
     test("Status: 400 if the article is valid format but does not exist", () => {
@@ -530,7 +685,7 @@ describe("Error handling", () => {
         .send({ username: "butter_bridge", comment: "Test comment" })
         .expect(400)
         .then(({ body }) => {
-          expect(body.message).toEqual("Article ID Does Not Exist");
+          expect(body.message).toEqual("Bad Request");
         });
     });
     test("Status: 404 if username is not in the usernames database", () => {

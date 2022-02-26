@@ -1,11 +1,13 @@
 const e = require("express");
 const db = require("../db/connection");
+const { fetchUserById } = require("./users.models");
+const { fetchTopicBySlug } = require("./topics.models");
 
-exports.fetchArticleById = async (req) => {
-  const articleId = req.params.article_id;
+exports.fetchArticleById = async (articleId) => {
+  // const articleId = req.params.article_id;
   const articleIdResult = await db.query(
     `
-  SELECT *,
+  SELECT articles.*,
   COUNT(comments.article_id) AS comment_count
   FROM articles 
   LEFT JOIN comments
@@ -87,6 +89,33 @@ exports.fetchArticleComments = async (id) => {
   );
   return commentResult.rows;
 };
+
+exports.sendArticle = async (author, title, body, topic) => {
+  if (
+    title === undefined ||
+    body === undefined ||
+    body.length === 0 ||
+    topic === undefined
+  ) {
+    return Promise.reject({
+      status: 400,
+      message: "Please complete all fields",
+    });
+  }
+  const topicCheck = await fetchTopicBySlug(topic);
+  const userCheck = await fetchUserById(author);
+
+  const result = await db.query(
+    `INSERT INTO articles (title, topic, body, author)
+    VALUES ($1, $2, $3, $4) RETURNING article_id;`,
+    [title, topic, body, author]
+  );
+
+  const articleId = result.rows[0].article_id;
+  const returnedArticle = await exports.fetchArticleById(articleId);
+  return returnedArticle;
+};
+// };
 
 exports.sendArticleVotesById = async (articleId, votes) => {
   if (votes === undefined || votes.length === 0) {

@@ -12,10 +12,11 @@ exports.psqlErrors = (err, req, res, next) => {
     res.status(400).send({ message: "Data entry error" });
   }
   if (err.code === "23503") {
-    res.status(400).send({ message: "Article ID Does Not Exist" });
+    res.status(400).send({ message: "Bad Request" });
   } else next(err);
 };
 
 exports.serverErrors = (err, req, res, next) => {
+  console.log(err);
   res.status(500).send({ message: "Server Error!" });
 };

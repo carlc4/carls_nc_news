@@ -4,10 +4,11 @@ const {
   fetchArticles,
   fetchArticleComments,
   sendArticleComment,
+  sendArticle,
 } = require("../models/articles.models.js");
 
 exports.getArticleById = (req, res, next) => {
-  fetchArticleById(req)
+  fetchArticleById(req.params.article_id)
     .then((singleArticle) => {
       return res.status(200).send({ article: singleArticle });
     })
@@ -61,6 +62,21 @@ exports.postArticleComment = (req, res, next) => {
   sendArticleComment(articleID, username, comment)
     .then((comment) => {
       res.status(200).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postArticles = (req, res, next) => {
+  const author = req.body.author;
+  const title = req.body.title;
+  const body = req.body.body;
+  const topic = req.body.topic;
+
+  sendArticle(author, title, body, topic)
+    .then((article) => {
+      res.status(200).send({ article });
     })
     .catch((err) => {
       next(err);

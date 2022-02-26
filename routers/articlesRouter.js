@@ -7,11 +7,11 @@ const {
   getArticles,
   getArticleComments,
   postArticleComment,
+  postArticles,
 } = require("../controllers/articles.controllers");
 // const methodError = require("../errors/app.errors");
 
-articlesRouter.route("/").get(getArticles);
-//   .post(methodError)
+articlesRouter.route("/").get(getArticles).post(postArticles);
 //   .patch(methodError)
 //   .all(methodError);
 //   .delete(methodError)
