@@ -9,9 +9,11 @@ exports.customErrors = (err, req, res, next) => {
 
 exports.psqlErrors = (err, req, res, next) => {
   if (err.code === "22P02") {
+    console.log(err);
     res.status(400).send({ message: "Data entry error" });
   }
   if (err.code === "23503") {
+    console.log(err);
     res.status(400).send({ message: "Bad Request" });
   } else next(err);
 };

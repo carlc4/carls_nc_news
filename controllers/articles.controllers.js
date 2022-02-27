@@ -5,6 +5,7 @@ const {
   fetchArticleComments,
   sendArticleComment,
   sendArticle,
+  removeArticle,
 } = require("../models/articles.models.js");
 
 exports.getArticleById = (req, res, next) => {
@@ -82,6 +83,17 @@ exports.postArticles = (req, res, next) => {
   sendArticle(author, title, body, topic)
     .then((article) => {
       res.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteArticleById = (req, res, next) => {
+  const articleId = req.params.article_id;
+  removeArticle(articleId)
+    .then((article) => {
+      res.status(204).send();
     })
     .catch((err) => {
       next(err);

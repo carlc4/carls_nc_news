@@ -182,3 +182,47 @@ exports.sendArticleComment = async (articleID, username, comment) => {
     return result.rows[0];
   }
 };
+
+exports.removeArticle = async (articleId) => {
+  if (isNaN(articleId)) {
+    return Promise.reject({ status: 400, message: "Bad Request" });
+  }
+  const alterTopics = await db.query(
+    `     ALTER TABLE articles
+          DROP CONSTRAINT articles_topic_fkey,
+          ADD CONSTRAINT articles_topic_fkey FOREIGN KEY (topic)
+          REFERENCES topics(slug) ON DELETE CASCADE;
+          `
+  );
+  const alterAuthor = await db.query(
+    `     ALTER TABLE articles
+          DROP CONSTRAINT articles_author_fkey,
+          ADD CONSTRAINT articles_author_fkey FOREIGN KEY (author)
+          REFERENCES users(username) ON DELETE CASCADE;
+          `
+  );
+  const alterComments = await db.query(
+    `     ALTER TABLE comments
+          DROP CONSTRAINT comments_article_id_fkey,
+          ADD CONSTRAINT comments_article_id_fkey FOREIGN KEY (article_id)
+          REFERENCES articles(article_id) ON DELETE CASCADE;
+          `
+  );
+
+  const result = await db.query(
+    `
+          DELETE FROM articles
+          WHERE article_id = $1
+          RETURNING *;`,
+    [articleId]
+  );
+
+  if (result.rows.length === 0) {
+    return Promise.reject({
+      status: 404,
+      message: "Article not found",
+    });
+  }
+
+  return result;
+};

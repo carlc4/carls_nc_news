@@ -40,34 +40,6 @@ describe("GET /api/topics", () => {
       });
   });
 });
-describe("POST /api/topics", () => {
-  test("Status: 200, topic is added, topic object is returned", () => {
-    const testObject = { body: "Test comment" };
-    return request(app)
-      .post("/api/topics")
-      .send({ slug: "Test", description: "Test topic" })
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.topic.slug).toEqual("Test");
-        expect(body.topic.description).toEqual("Test topic");
-      });
-  });
-  test("Status: 200, topic is added, topic table is updated", () => {
-    const testObject = { body: "Test comment" };
-    return request(app)
-      .post("/api/topics")
-      .send({ slug: "Test", description: "Test topic" })
-      .expect(200)
-      .then(() => {
-        return request(app)
-          .get("/api/topics")
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.topics).toHaveLength(4);
-          }); // this test adds a comment and then checks that the number of topic objects has been updated to 4
-      });
-  });
-});
 describe("GET /api/topics", () => {
   test("Status: 200, returns an array of topic objects with matching slug", () => {
     return request(app)
@@ -125,216 +97,6 @@ describe("GET /api/comments", () => {
             })
           );
         });
-      });
-  });
-});
-describe("PATCH /api/comments/:comment_id", () => {
-  test("Status: 200, votes key on object updated when positive number passed in", () => {
-    return request(app)
-      .patch("/api/comments/1")
-      .send({ inc_votes: 1 })
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.comment).toEqual({
-          comment_id: 1,
-          article_id: expect.any(Number),
-          author: "butter_bridge",
-          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-          created_at: expect.any(String),
-          votes: 17,
-        });
-      });
-  });
-  test("Status: 200, votes key on object updated when negative number passed in", () => {
-    return request(app)
-      .patch("/api/comments/1")
-      .send({ inc_votes: -1 })
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.comment).toEqual({
-          comment_id: 1,
-          article_id: expect.any(Number),
-          author: "butter_bridge",
-          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-          created_at: expect.any(String),
-          votes: 15,
-        });
-      });
-  });
-});
-describe("GET /api/articles/:article_id", () => {
-  test("Status: 200", () => {
-    return request(app).get("/api/articles/1").expect(200);
-  });
-  test("Status: 200, returns an object with corresponding keys", () => {
-    return request(app)
-      .get("/api/articles/1")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.article).toEqual(
-          expect.objectContaining({
-            article_id: expect.any(Number),
-            title: expect.any(String),
-            topic: expect.any(String),
-            author: expect.any(String),
-            body: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-          })
-        );
-      });
-  });
-  test("Status: 200, returns a specific object based on input", () => {
-    const testObject = {
-      article_id: 1,
-      title: "Living in the shadow of a great man",
-      topic: "mitch",
-      author: "butter_bridge",
-      // body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-      body: "I find this existence challenging",
-      votes: expect.any(Number),
-    };
-    return request(app)
-      .get("/api/articles/1")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.article).toMatchObject(testObject);
-      });
-  });
-});
-describe("PATCH /api/articles/:article_id", () => {
-  test("Status: 200, votes key on object updated when positive number passed in", () => {
-    return request(app)
-      .patch("/api/articles/1")
-      .send({ inc_votes: 1 })
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.article).toEqual({
-          article_id: 1,
-          title: "Living in the shadow of a great man",
-          topic: "mitch",
-          author: "butter_bridge",
-          body: "I find this existence challenging",
-          created_at: expect.any(String),
-          votes: 101,
-        });
-      });
-  });
-  test("Status: 200, votes key on object updated when negative number passed in", () => {
-    return request(app)
-      .patch("/api/articles/1")
-      .send({ inc_votes: -1 })
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.article).toEqual({
-          article_id: 1,
-          title: "Living in the shadow of a great man",
-          topic: "mitch",
-          author: "butter_bridge",
-          body: "I find this existence challenging",
-          created_at: expect.any(String),
-          votes: 99,
-        });
-      });
-  });
-});
-describe("REFACTOR - GET /api/articles/:article_id", () => {
-  test("Status: 200, returns an updated object", () => {
-    return request(app).get("/api/articles/1").expect(200);
-  });
-  test("Status: 200, returns an updated object with a comment count key", () => {
-    const testObject = { comment_count: "1" };
-    return request(app)
-      .get("/api/articles/1")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.article).toMatchObject(testObject);
-      });
-  });
-});
-describe("GET /api/articles/:article_id/comments", () => {
-  test("Status: 200", () => {
-    return request(app).get("/api/articles/1/comments/").expect(200);
-  });
-  test("Status: 200, returns an array", () => {
-    return request(app)
-      .get("/api/articles/1/comments")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.comments).toBeInstanceOf(Array);
-      });
-  });
-  test("Status: 200, returns an array of comment objects with correct keys", () => {
-    return request(app)
-      .get("/api/articles/1/comments")
-      .expect(200)
-      .then(({ body }) => {
-        body.comments.forEach((comment) => {
-          expect(comment).toEqual(
-            expect.objectContaining({
-              comment_id: expect.any(Number),
-              votes: expect.any(Number),
-              created_at: expect.any(String),
-              author: expect.any(String),
-              body: expect.any(String),
-            })
-          );
-        });
-      });
-  });
-  test("Status: 200, first comment object matches first entry in test database", () => {
-    return request(app)
-      .get("/api/articles/1/comments")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.comments[0]).toEqual(
-          expect.objectContaining({
-            comment_id: 2,
-            votes: 14,
-            created_at: expect.any(String),
-            author: "butter_bridge",
-            body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-          })
-        );
-      });
-  });
-  test("Status: 200, returns an array limited to 10 items by default", () => {
-    return request(app)
-      .get("/api/articles/1/comments?limit=10&&p=1")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.comments).toBeInstanceOf(Array);
-        expect(body.comments).toHaveLength(10);
-      });
-  });
-  test("Status: 200, returns an array limited to 5 items when L is passed in the query", () => {
-    return request(app)
-      .get("/api/articles/1/comments?limit=5")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.comments).toBeInstanceOf(Array);
-        expect(body.comments).toHaveLength(5);
-      });
-  });
-  test("Status: 200, returns an array limited to 5 items when L is passed in the query", () => {
-    return request(app)
-      .get("/api/articles/1/comments?limit=5&&p=3")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.comments).toBeInstanceOf(Array);
-        expect(body.comments).toHaveLength(1);
-      }); // expects a return of 1 as there are 11 comments, the third page has a single comment when l = 5
-  });
-});
-describe("POST /api/articles/:article_id/comments", () => {
-  test("Status: 200, comment object is returned", () => {
-    const testObject = { body: "Test comment" };
-    return request(app)
-      .post("/api/articles/1/comments")
-      .send({ username: "butter_bridge", comment: "Test comment" })
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.comment).toMatchObject(testObject);
       });
   });
 });
@@ -473,6 +235,269 @@ describe("REFACTOR GET/api/articles", () => {
       });
   }); // the above test sets the page to 2, where there should only be one item listed as there are 11 in total
 });
+describe("GET /api/articles/:article_id", () => {
+  test("Status: 200", () => {
+    return request(app).get("/api/articles/1").expect(200);
+  });
+  test("Status: 200, returns an object with corresponding keys", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toEqual(
+          expect.objectContaining({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          })
+        );
+      });
+  });
+  test("Status: 200, returns a specific object based on input", () => {
+    const testObject = {
+      article_id: 1,
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "butter_bridge",
+      // body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+      body: "I find this existence challenging",
+      votes: expect.any(Number),
+    };
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject(testObject);
+      });
+  });
+});
+describe("REFACTOR - GET /api/articles/:article_id", () => {
+  test("Status: 200, returns an updated object", () => {
+    return request(app).get("/api/articles/1").expect(200);
+  });
+  test("Status: 200, returns an updated object with a comment count key", () => {
+    const testObject = { comment_count: "1" };
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject(testObject);
+      });
+  });
+});
+describe("GET /api/users/:username", () => {
+  test("Status: 200", () => {
+    return request(app).get("/api/users/butter_bridge").expect(200);
+  });
+  test("Status: 200, returns a specific object with corresponding keys based on input", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.user).toEqual(
+          expect.objectContaining({
+            username: "butter_bridge",
+            name: "jonny",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          })
+        );
+      });
+  });
+});
+describe("GET /api/articles/:article_id/comments", () => {
+  test("Status: 200", () => {
+    return request(app).get("/api/articles/1/comments/").expect(200);
+  });
+  test("Status: 200, returns an array", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+      });
+  });
+  test("Status: 200, returns an array of comment objects with correct keys", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        body.comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("Status: 200, first comment object matches first entry in test database", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments[0]).toEqual(
+          expect.objectContaining({
+            comment_id: 2,
+            votes: 14,
+            created_at: expect.any(String),
+            author: "butter_bridge",
+            body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          })
+        );
+      });
+  });
+  test("Status: 200, returns an array limited to 10 items by default", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=10&&p=1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments).toHaveLength(10);
+      });
+  });
+  test("Status: 200, returns an array limited to 5 items when L is passed in the query", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments).toHaveLength(5);
+      });
+  });
+  test("Status: 200, returns an array limited to 5 items when L is passed in the query", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5&&p=3")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments).toHaveLength(1);
+      }); // expects a return of 1 as there are 11 comments, the third page has a single comment when l = 5
+  });
+});
+describe("GET /api", () => {
+  test("Exports the API endpoints file as a JSON object", () => {
+    return request(app).get("/api").expect(200);
+  });
+});
+describe("PATCH /api/articles/:article_id", () => {
+  test("Status: 200, votes key on object updated when positive number passed in", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: expect.any(String),
+          votes: 101,
+        });
+      });
+  });
+  test("Status: 200, votes key on object updated when negative number passed in", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -1 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: expect.any(String),
+          votes: 99,
+        });
+      });
+  });
+});
+describe("PATCH /api/comments/:comment_id", () => {
+  test("Status: 200, votes key on object updated when positive number passed in", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: 1,
+          article_id: expect.any(Number),
+          author: "butter_bridge",
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          created_at: expect.any(String),
+          votes: 17,
+        });
+      });
+  });
+  test("Status: 200, votes key on object updated when negative number passed in", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: -1 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: 1,
+          article_id: expect.any(Number),
+          author: "butter_bridge",
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          created_at: expect.any(String),
+          votes: 15,
+        });
+      });
+  });
+});
+describe("POST /api/articles/:article_id/comments", () => {
+  test("Status: 200, comment object is returned", () => {
+    const testObject = { body: "Test comment" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ username: "butter_bridge", comment: "Test comment" })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject(testObject);
+      });
+  });
+});
+describe("POST /api/topics", () => {
+  test("Status: 200, topic is added, topic object is returned", () => {
+    const testObject = { body: "Test comment" };
+    return request(app)
+      .post("/api/topics")
+      .send({ slug: "Test", description: "Test topic" })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.topic.slug).toEqual("Test");
+        expect(body.topic.description).toEqual("Test topic");
+      });
+  });
+  test("Status: 200, topic is added, topic table is updated", () => {
+    const testObject = { body: "Test comment" };
+    return request(app)
+      .post("/api/topics")
+      .send({ slug: "Test", description: "Test topic" })
+      .expect(200)
+      .then(() => {
+        return request(app)
+          .get("/api/topics")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.topics).toHaveLength(4);
+          }); // this test adds a comment and then checks that the number of topic objects has been updated to 4
+      });
+  });
+});
 describe("POST /api/articles/", () => {
   test("Status: 200, article is posted to table", () => {
     return request(app)
@@ -522,29 +547,22 @@ describe("DELETE/api/comments/1", () => {
       });
   });
 });
-describe("GET /api/users/:username", () => {
-  test("Status: 200", () => {
-    return request(app).get("/api/users/butter_bridge").expect(200);
+describe("DELETE/api/articles/:article_id", () => {
+  test("Status: 204, article is deleted", () => {
+    return request(app).delete("/api/articles/1").expect(204);
   });
-  test("Status: 200, returns a specific object with corresponding keys based on input", () => {
+  test("Status: 204, article is deleted, length of table is reduced", () => {
     return request(app)
-      .get("/api/users/butter_bridge")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.user).toEqual(
-          expect.objectContaining({
-            username: "butter_bridge",
-            name: "jonny",
-            avatar_url:
-              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
-          })
-        );
+      .delete("/api/articles/1")
+      .expect(204)
+      .then(() => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then((response) => {
+            expect(response.body.articles).toHaveLength(10);
+          });
       });
-  });
-});
-describe("GET /api", () => {
-  test("Exports the API endpoints file as a JSON object", () => {
-    return request(app).get("/api").expect(200);
   });
 });
 
@@ -914,6 +932,24 @@ describe("Error handling", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toEqual("User does not exist");
+        });
+    });
+  });
+  describe("Delete Article Errors", () => {
+    test("Status: 404, comment is not found", () => {
+      return request(app)
+        .delete("/api/articles/99999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Article not found");
+        });
+    });
+    test("Status: 400, comment is invalid", () => {
+      return request(app)
+        .delete("/api/articles/ERROR")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Bad Request");
         });
     });
   });
