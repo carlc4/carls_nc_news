@@ -42,21 +42,21 @@ From the terminal to install the dependencies. For testing purposes, you will al
 
 Available end points are:
 
+- GET /api/
 - GET /api/topics
 - GET /api/comments
-
 - GET /api/articles/
-
 - GET /api/articles/:article_id
-
 - GET /api/articles/:article_id/comments
-
 - GET /api/users/
+- GET /api/users/:username
+- PATCH /api/comments/:comment_id
 - PATCH /api/articles/:article_id
-
+- POST /api/articles/
+- POST /api/topics/
 - POST /api/articles/:article_id/comments
-
 - DELETE /api/comments/:comment_id
+- DELETE /api/articles/:article_id
 
 # Testing
 

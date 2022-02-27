@@ -8,6 +8,7 @@ const {
   getArticleComments,
   postArticleComment,
   postArticles,
+  deleteArticleById,
 } = require("../controllers/articles.controllers");
 const { methodError } = require("../errors/app.errors");
 
@@ -23,7 +24,7 @@ articlesRouter
   .get(getArticleById)
   .post(methodError)
   .patch(patchArticleById)
-  .delete(methodError);
+  .delete(deleteArticleById);
 
 articlesRouter
   .route("/:article_id/comments")
