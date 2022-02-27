@@ -551,6 +551,19 @@ describe("DELETE/api/articles/:article_id", () => {
   test("Status: 204, article is deleted", () => {
     return request(app).delete("/api/articles/1").expect(204);
   });
+  test("Status: 204, article is deleted, length of table is reduced", () => {
+    return request(app)
+      .delete("/api/articles/1")
+      .expect(204)
+      .then(() => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then((response) => {
+            expect(response.body.articles).toHaveLength(10);
+          });
+      });
+  });
 });
 
 describe("Error handling", () => {
