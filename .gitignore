@@ -1,2 +1,5 @@
 node_modules
+error-handling.md 
+hosting.md
+.env-example
 .env.*

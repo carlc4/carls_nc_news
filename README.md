@@ -8,7 +8,7 @@ The database contains information on users, articles, comments and topics.
 
 The API was built using Postgres SQL and node-postgres.
 
-You can find a live version of this API at:
+You can find a live version of this API at: [https://carls-nc-news.herokuapp.com/api](https://carls-nc-news.herokuapp.com/api)
 
 And (eventually) a Front End to the API at: (link to follow)
 
