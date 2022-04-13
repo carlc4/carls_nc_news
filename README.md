@@ -52,6 +52,7 @@ Available end points are:
 - GET /api/users/:username
 - PATCH /api/comments/:comment_id
 - PATCH /api/articles/:article_id
+- POST /api/users/new
 - POST /api/articles/
 - POST /api/topics/
 - POST /api/articles/:article_id/comments

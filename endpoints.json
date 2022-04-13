@@ -1,203 +1,244 @@
 {
-"GET /api": {
-      "description": "Serves up a JSON representation of all the available endpoints of the api."
-},
-"GET /api/topics": {
-      "description": "Serves an array of all topics.",
-      "queries": [],
-      "exampleResponse": {
-          "topics": [{ "slug": "football", "description": "Footie!" }]
-      }
-},
-"GET /api/comments": {
-    "description": "Serves an array of objects containing all comments.",
-    "queries": [],
-    "exampleResponse": {
-        "comments": [
-            {
-                "comment_id": 1,
-                "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-                "votes": 16,
-                "author": "butter_bridge",
-                "article_id": 9,
-                "created_at": "2021-11-11T13:18:53.414Z"
-            }
-        ]
-    }
-},
-"GET /api/articles": {
-      "description": "Serves an array of all articles.",
-      "queries": ["topic", "sort_by", "order"],
-      "exampleResponse": {
-          "articles": [
-              {
-                  "title": "Eight pug gifs that remind me of mitch",
-                  "topic": "mitch",
-                  "author": "icellusedkars",
-                  "body": "some gifs",
-                  "votes": 0,
-                  "created_at": "2020-11-03T09:12:00.000Z"
-              }
-          ]
-      }
-},
-"GET /api/articles/:article_id": {
-      "description": "Serves an article object from the id requested.",
-      "queries": [],
-      "exampleResponse": {
-          "article": [
-              {
-                  "article_id": 1,
-                  "title": "Living in the shadow of a great man",
-                  "body": "I find this existence challenging",
-                  "votes": 100,
-                  "topic": "mitch",
-                  "author": "butter_bridge",
-                  "created_at": "2018-11-15T12:21:54.171Z",
-                  "comment_count": 13
-              }
-          ]
-      }
-},
-"GET /api/articles/:article_id/comments": {
-      "description": "Serves an array of comment objects from the article id in the request",
-      "queries": [],
-      "exampleResponse": {
-          "comments": [
-              {
-                  "comment_id": 2,
-                  "author": "butter_bridge",
-                  "article_id": 1,
-                  "votes": 14,
-                  "created_at": "2020-10-31T03:03:00.000Z",
-                  "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
-              }
-          ]
-      }
-},
-"GET /api/users": {
-    "descripton": "Serves an array of objects with all the registered users in the database",
-    "queries": [],
-    "exampleResponse": {
-        "usernames": [
-            { "username": "butter_bridge" },
-            { "username": "icellusedkars" },
-            { "username": "rogersop" }
-        ]
-    }
-},
-"GET /api/users/:username": {
-    "description": "Serves a user object from the name requested.",
-    "queries": ["butter_bridge"],
-    "exampleResponse": {
-        "user": [
-            {
-                "username": "butter_bridge",
-                "name": "jonny",
-                "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-            }
-        ]
-    }
-},
-"PATCH /api/comments/comment_id": {
-    "description": "Serves a comment object with votes which are either increased or decreased by the given value.",
-    "queries": [],
-    "exampleRequest": { "inc_votes": 1 },
-    "example response": {
-        "comment": [
-            {
-                "comment_id": 1,
-                "article_id": 8,
-                "author": "butter_bridge",
-                "votes": 15,
-                "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-                "created_at": "2018-11-15T12:21:54.171Z"
-            }
-        ]
-    }
-},
-"PATCH /api/articles/:article_id": {
-    "description": "Serves an article object with votes which are either increased or decreased by the given value.",
-    "queries": [],
-    "exampleRequest": { "inc_votes": 1 },
-    "example response": {
-        "article": [
-            {
-                "article_id": 1,
-                "title": "Living in the shadow of a great man",
-                "body": "I find this existence challenging",
-                "votes": 101,
-                "topic": "mitch",
-                "author": "butter_bridge",
-                "created_at": "2018-11-15T12:21:54.171Z"
-            }
-        ]
-    }
-},
-"POST /api/articles/": {
-    "description": "Posts a new article and assigns a new ID",
-    "queries": [],
-    "exampleRequest": {
-        "author": "butter_bridge",
-        "title": "Test",
-        "body": "Test article text",
-        "topic": "mitch"
+    "GET /api": {
+        "description": "Serves up a JSON representation of all the available endpoints of the api."
     },
-    "exampleResponse": {
-        "comment": [
-            {
-                "author": "butter_bridge",
-                "title": "Test",
-                "body": "Test article text",
-                "topic": "mitch",
-                "created_at": "2022-02-19T12:28:37.497Z",
-                "article_id": 16,
-                "votes": 0,
-                "comment_count": 0
-            }
-        ]
-    }
-},
-"POST /api/topics/": {
-    "description": "Posts a new topic and assigns a new ID",
-    "queries": [],
-    "exampleRequest": { "slug": "Test", "description": "Test topic" },
-    "exampleResponse": {
-        "comment": [
-            {
-                "slug": "Test",
-                "description": "Test topic"
-            }
-        ]
-    }
-},
-"POST /api/articles/:article_id/comments": {
-    "description": "Serves a new comment object from the article id in the request.",
-    "queries": [],
-    "exampleRequest": {
-        "username": "butter_bridge",
-        "body": "Test comment"
+    "GET /api/topics": {
+        "description": "Serves an array of all topics.",
+        "queries": [],
+        "exampleResponse": {
+            "topics": [
+                {
+                    "slug": "football",
+                    "description": "Footie!"
+                }
+            ]
+        }
     },
-    "exampleResponse": {
-        "comment": [
-            {
-                "comment_id": 19,
-                "author": "butter_bridge",
-                "article_id": 1,
-                "votes": 0,
-                "created_at": "2022-02-19T12:28:37.497Z",
-                "body": "Test comment"
-            }
-        ]
+    "GET /api/comments": {
+        "description": "Serves an array of objects containing all comments.",
+        "queries": [],
+        "exampleResponse": {
+            "comments": [
+                {
+                    "comment_id": 1,
+                    "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                    "votes": 16,
+                    "author": "butter_bridge",
+                    "article_id": 9,
+                    "created_at": "2021-11-11T13:18:53.414Z"
+                }
+            ]
+        }
+    },
+    "GET /api/articles": {
+        "description": "Serves an array of all articles.",
+        "queries": [
+            "topic",
+            "sort_by",
+            "order"
+        ],
+        "exampleResponse": {
+            "articles": [
+                {
+                    "title": "Eight pug gifs that remind me of mitch",
+                    "topic": "mitch",
+                    "author": "icellusedkars",
+                    "body": "some gifs",
+                    "votes": 0,
+                    "created_at": "2020-11-03T09:12:00.000Z"
+                }
+            ]
+        }
+    },
+    "GET /api/articles/:article_id": {
+        "description": "Serves an article object from the id requested.",
+        "queries": [],
+        "exampleResponse": {
+            "article": [
+                {
+                    "article_id": 1,
+                    "title": "Living in the shadow of a great man",
+                    "body": "I find this existence challenging",
+                    "votes": 100,
+                    "topic": "mitch",
+                    "author": "butter_bridge",
+                    "created_at": "2018-11-15T12:21:54.171Z",
+                    "comment_count": 13
+                }
+            ]
+        }
+    },
+    "GET /api/articles/:article_id/comments": {
+        "description": "Serves an array of comment objects from the article id in the request",
+        "queries": [],
+        "exampleResponse": {
+            "comments": [
+                {
+                    "comment_id": 2,
+                    "author": "butter_bridge",
+                    "article_id": 1,
+                    "votes": 14,
+                    "created_at": "2020-10-31T03:03:00.000Z",
+                    "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
+                }
+            ]
+        }
+    },
+    "GET /api/users": {
+        "descripton": "Serves an array of objects with all the registered users in the database",
+        "queries": [],
+        "exampleResponse": {
+            "usernames": [
+                {
+                    "username": "butter_bridge"
+                },
+                {
+                    "username": "icellusedkars"
+                },
+                {
+                    "username": "rogersop"
+                }
+            ]
+        }
+    },
+    "GET /api/users/:username": {
+        "description": "Serves a user object from the name requested.",
+        "queries": [
+            "butter_bridge"
+        ],
+        "exampleResponse": {
+            "user": [
+                {
+                    "username": "butter_bridge",
+                    "name": "jonny",
+                    "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+                }
+            ]
+        }
+    },
+    "PATCH /api/comments/comment_id": {
+        "description": "Serves a comment object with votes which are either increased or decreased by the given value.",
+        "queries": [],
+        "exampleRequest": {
+            "inc_votes": 1
+        },
+        "example response": {
+            "comment": [
+                {
+                    "comment_id": 1,
+                    "article_id": 8,
+                    "author": "butter_bridge",
+                    "votes": 15,
+                    "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                    "created_at": "2018-11-15T12:21:54.171Z"
+                }
+            ]
+        }
+    },
+    "PATCH /api/articles/:article_id": {
+        "description": "Serves an article object with votes which are either increased or decreased by the given value.",
+        "queries": [],
+        "exampleRequest": {
+            "inc_votes": 1
+        },
+        "example response": {
+            "article": [
+                {
+                    "article_id": 1,
+                    "title": "Living in the shadow of a great man",
+                    "body": "I find this existence challenging",
+                    "votes": 101,
+                    "topic": "mitch",
+                    "author": "butter_bridge",
+                    "created_at": "2018-11-15T12:21:54.171Z"
+                }
+            ]
+        }
+    },
+    "POST /api/articles/": {
+        "description": "Posts a new article and assigns a new ID",
+        "queries": [],
+        "exampleRequest": {
+            "author": "butter_bridge",
+            "title": "Test",
+            "body": "Test article text",
+            "topic": "mitch"
+        },
+        "exampleResponse": {
+            "comment": [
+                {
+                    "author": "butter_bridge",
+                    "title": "Test",
+                    "body": "Test article text",
+                    "topic": "mitch",
+                    "created_at": "2022-02-19T12:28:37.497Z",
+                    "article_id": 16,
+                    "votes": 0,
+                    "comment_count": 0
+                }
+            ]
+        }
+    },
+    "POST /api/topics/": {
+        "description": "Posts a new topic and assigns a new ID",
+        "queries": [],
+        "exampleRequest": {
+            "slug": "Test",
+            "description": "Test topic"
+        },
+        "exampleResponse": {
+            "comment": [
+                {
+                    "slug": "Test",
+                    "description": "Test topic"
+                }
+            ]
+        }
+    },
+    "POST /api/users/new": {
+        "description": "Posts a new user and returns user info",
+        "queries": [],
+        "exampleRequest": {
+            "username": "testUser",
+            "name ": "Test User",
+            "avatar_url": "www.test-url.com"
+        },
+        "exampleResponse": {
+            "user": [
+                {
+                    "username": "testUser",
+                    "name ": "Test User",
+                    "avatar_url": "www.test-url.com"
+                }
+            ]
+        }
+    },
+    "POST /api/articles/:article_id/comments": {
+        "description": "Serves a new comment object from the article id in the request.",
+        "queries": [],
+        "exampleRequest": {
+            "username": "butter_bridge",
+            "body": "Test comment"
+        },
+        "exampleResponse": {
+            "comment": [
+                {
+                    "comment_id": 19,
+                    "author": "butter_bridge",
+                    "article_id": 1,
+                    "votes": 0,
+                    "created_at": "2022-02-19T12:28:37.497Z",
+                    "body": "Test comment"
+                }
+            ]
+        }
+    },
+    "DELETE /api/articles/:article_id": {
+        "description": "Deletes the article with the ID supplied in the request",
+        "queries": []
+    },
+    "DELETE /api/comments/:comment_id": {
+        "description": "Deletes the comment from the ID supplied in the request",
+        "queries": []
     }
-},
-"DELETE /api/articles/:article_id": {
-    "description": "Deletes the article with the ID supplied in the request",
-    "queries": []
-},
-"DELETE /api/comments/:comment_id": {
-    "description": "Deletes the comment from the ID supplied in the request",
-    "queries": []
-}
-
 }

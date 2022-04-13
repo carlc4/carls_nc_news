@@ -21,3 +21,19 @@ exports.fetchUserById = async (id) => {
     return Promise.reject({ status: 400, message: "User does not exist" });
   } else return userInfo.rows[0];
 };
+
+exports.createUser = async (username, name, avatar_url) => {
+  if (username === undefined || username === null ||
+    name === undefined || name === null) {
+    return Promise.reject({
+      status: 400,
+      message: "Please complete all fields",
+    });
+  }
+  const userCreate = await db.query(
+    `INSERT INTO users(username, name, avatar_url) 
+  VALUES ($1, $2, $3) RETURNING *;`,
+    [username, name, avatar_url]
+  )
+  return userCreate.rows[0]
+}
