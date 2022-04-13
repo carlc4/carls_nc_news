@@ -531,6 +531,28 @@ describe("POST /api/articles/", () => {
       });
   });
 });
+describe("POST /api/users/new", () => {
+  test("Status: 200, returns a new user object based on input", () => {
+    return request(app)
+      .post("/api/users/new")
+      .send({
+        username: "testUser",
+        name: "test name",
+        avatar_url: "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+      })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.user).toEqual(
+          expect.objectContaining({
+            username: "testUser",
+            name: "test name",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          })
+        );
+      });
+  });
+});
 describe("DELETE/api/comments/1", () => {
   test("Status: 204, comment is deleted", () => {
     return request(app)
@@ -606,7 +628,6 @@ describe("Error handling", () => {
         });
     });
   });
-
   describe("Article errors", () => {
     test("Status: 400, not found if article_id is invalid", () => {
       return request(app)
@@ -950,6 +971,26 @@ describe("Error handling", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toEqual("Bad Request");
+        });
+    });
+  });
+  describe("Post New User Errors", () => {
+    test("Status: 400, username is invalid", () => {
+      return request(app)
+        .post("/api/users/new")
+        .send({ username: null, name: "Test User"})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Please complete all fields");
+        });
+    });
+    test("Status: 400, name is invalid", () => {
+      return request(app)
+        .post("/api/users/new")
+        .send({ username: "Test", name: null})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toEqual("Please complete all fields");
         });
     });
   });
